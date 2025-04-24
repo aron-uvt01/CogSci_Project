@@ -6,11 +6,14 @@ import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import (
     accuracy_score, classification_report,
     confusion_matrix, ConfusionMatrixDisplay
 )
 import random
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 
 #Load and merge data 
 eeg_data = pd.read_csv("/Users/butararon/Desktop/Uvt-Cognitive Science/Year 1 /Semester 2 /Computer science and cognition /Projects/Dots_30_006_data.csv")
@@ -85,6 +88,73 @@ ConfusionMatrixDisplay.from_estimator(best_model, X_test, y_test)
 plt.title(f"Hill Climbing RF Confusion Matrix (Acc = {best_score:.2f})")
 plt.tight_layout()
 plt.savefig("hillclimb_rf_confusion_matrix.png")
+plt.show()
+
+# Naive Bayes
+nb_model = GaussianNB()
+nb_model.fit(X_train, y_train)
+nb_preds = nb_model.predict(X_test)
+
+#Evaluarea
+nb_accuracy = accuracy_score(y_test, nb_preds)
+print(f"Naive Bayes Accuracy: {nb_accuracy:.2f}")
+print("Classification Report (Naive Bayes):")
+print(classification_report(y_test, nb_preds))
+
+#Yeah man confusion matrix
+ConfusionMatrixDisplay.from_estimator(nb_model, X_test, y_test)
+plt.title(f"Naive Bayes Confusion Matrix (Acc = {nb_accuracy:.2f})")
+plt.tight_layout()
+plt.savefig("naive_bayes_confusion_matrix.png")
+plt.show()
+
+#K-Nearest Neighbors (KNN)
+knn_model = KNeighborsClassifier(n_neighbors=5)
+knn_model.fit(X_train, y_train)
+knn_preds = knn_model.predict(X_test)
+
+knn_accuracy = accuracy_score(y_test, knn_preds)
+print(f"KNN Accuracy: {knn_accuracy:.2f}")
+print("Classification Report (KNN):")
+print(classification_report(y_test, knn_preds))
+
+ConfusionMatrixDisplay.from_estimator(knn_model, X_test, y_test)
+plt.title(f"KNN Confusion Matrix (Acc = {knn_accuracy:.2f})")
+plt.tight_layout()
+plt.savefig("knn_confusion_matrix.png")
+plt.show()
+
+#Support Vector Machine (SVM)
+svm_model = SVC(kernel='rbf', gamma='scale', C=1.0)
+svm_model.fit(X_train, y_train)
+svm_preds = svm_model.predict(X_test)
+
+svm_accuracy = accuracy_score(y_test, svm_preds)
+print(f"SVM Accuracy: {svm_accuracy:.2f}")
+print("Classification Report (SVM):")
+print(classification_report(y_test, svm_preds))
+
+ConfusionMatrixDisplay.from_estimator(svm_model, X_test, y_test)
+plt.title(f"SVM Confusion Matrix (Acc = {svm_accuracy:.2f})")
+plt.tight_layout()
+plt.savefig("svm_confusion_matrix.png")
+plt.show()
+
+model_scores = {
+    "Random Forest": base_acc,
+    "HillClimb RF": best_score,
+    "Naive Bayes": nb_accuracy,
+    "KNN": knn_accuracy,
+    "SVM": svm_accuracy
+}
+plt.figure(figsize=(8, 5))
+plt.bar(model_scores.keys(), model_scores.values(), color='skyblue')
+plt.ylim(0, 1)
+plt.ylabel("Accuracy")
+plt.title("Model Accuracy Comparison")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.savefig("model_accuracy_comparison.png")
 plt.show()
 
 #Aici vedem care feature e mai relevant
